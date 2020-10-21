@@ -38,9 +38,24 @@ export function parse(recipeString: string) {
   quantity = convert.convertFromFraction(quantity);
 
   let extraInfo;
+  let container;
   if (convert.getFirstMatch(noQuantity, /\(([^\)]+)\)/)) {
     extraInfo = convert.getFirstMatch(noQuantity, /\(([^\)]+)\)/);
     noQuantity = noQuantity.replace(extraInfo, '').trim();
+    if(extraInfo) {
+      let containerUnit;
+      let [containerQuantity, containerNonQuantity] = convert.findQuantityAndConvertIfUnicode(extraInfo.substring(1, extraInfo.length - 1));
+      if(containerNonQuantity) {
+        [containerUnit] = getUnit(containerNonQuantity.split(' ')[0]) as string[];
+      }
+      if(containerQuantity) {
+        containerQuantity = convert.convertFromFraction(containerQuantity);
+        container = {
+          quantity: containerQuantity,
+          unit: containerUnit
+        }
+      }
+    }
   }
 
   const [unit, shorthand] = getUnit(noQuantity.split(' ')[0]) as string[];
@@ -49,7 +64,8 @@ export function parse(recipeString: string) {
   return {
     quantity,
     unit: !!unit ? unit : null,
-    ingredient: extraInfo ? `${extraInfo} ${ingredient}` : ingredient
+    ingredient: container ? ingredient : `${extraInfo} ${ingredient}`,
+    container
   };
 }
 

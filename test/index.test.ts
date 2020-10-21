@@ -247,6 +247,13 @@ describe('recipe parser', () => {
       expect(parse('1 teaspoon milk').ingredient).to.equal('milk');
     });
   });
+
+  describe('translate ingredient container', () => {
+    expect(parse('1 (8 ounce) can tomato sauce').container).to.deep.equal({
+      quantity: '8',
+      unit: 'ounce'
+    })
+  })
 });
 
 describe('combine ingredients', () => {
