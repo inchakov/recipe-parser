@@ -44,14 +44,13 @@ export function parse(recipeString: string) {
     noQuantity = noQuantity.replace(extraInfo, '').trim();
     if (extraInfo) {
       let containerUnit;
-      let [containerQuantity, containerNonQuantity] = convert.findQuantityAndConvertIfUnicode(extraInfo.substring(1, extraInfo.length - 1));
+      const [containerQuantity, containerNonQuantity] = convert.findQuantityAndConvertIfUnicode(extraInfo.substring(1, extraInfo.length - 1));
       if (containerNonQuantity) {
         [containerUnit] = getUnit(containerNonQuantity.split(' ')[0]) as string[];
       }
       if (containerQuantity) {
-        containerQuantity = convert.convertFromFraction(containerQuantity);
         container = {
-          quantity: containerQuantity,
+          quantity: convert.convertFromFraction(containerQuantity),
           unit: containerUnit
         };
       }
@@ -64,8 +63,8 @@ export function parse(recipeString: string) {
   return {
     quantity,
     unit: !!unit ? unit : null,
-    ingredient: (container || !extraInfo) ? ingredient : `${extraInfo} ${ingredient}`,
-    container: (container ? container : null)
+    ingredient: (!!container || !extraInfo) ? ingredient : `${extraInfo} ${ingredient}`,
+    container: (!!container ? container : null)
   };
 }
 
