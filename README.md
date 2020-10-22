@@ -8,14 +8,18 @@ Natural language parser for recipes and lists of ingredients. Can parse a string
 `import { parse } from 'recipe-ingredient-parser';`
 
 And then use on a string, for example:
-`parse('1 teaspoon basil');`
+`parse('1 (8 ounce) can tomato sauce');`
 
 Will return an object:
 ```
 {
   quantity: 1,
-  unit: 'teaspoon',
-  ingredient: 'basil'
+  unit: 'can',
+  ingredient: 'tomato sauce',
+  container: {
+    quantity: '8',
+    unit: 'ounce'
+  }
 };
 ```
 
