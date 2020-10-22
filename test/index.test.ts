@@ -57,7 +57,8 @@ describe('recipe parser', () => {
       expect(parse('1/3 cup confectioners’ sugar')).to.deep.equal({
         quantity: '0.333',
         unit: 'cup',
-        ingredient: 'confectioners’ sugar'
+        ingredient: 'confectioners’ sugar',
+        container: null
       });
     });
   });
@@ -124,21 +125,43 @@ describe('recipe parser', () => {
       expect(parse('1 (14.5 oz) can tomatoes')).to.deep.equal({
         unit: 'can',
         quantity: '1',
-        ingredient: '(14.5 oz) tomatoes'
+        ingredient: 'tomatoes',
+        container: {
+          quantity: '14.5',
+          unit: 'ounce'
+        }
       });
     });
     it('"1 (16 oz) box pasta"', () => {
       expect(parse('1 (16 oz) box pasta')).to.deep.equal({
         unit: 'box',
         quantity: '1',
-        ingredient: '(16 oz) pasta'
+        ingredient: 'pasta',
+        container: {
+          quantity: '16',
+          unit: 'ounce'
+        }
       });
     });
     it('"1 slice cheese"', () => {
       expect(parse('1 slice cheese')).to.deep.equal({
         unit: 'slice',
         quantity: '1',
-        ingredient: 'cheese'
+        ingredient: 'cheese',
+        container: null
+      });
+    });
+  });
+
+  describe('translate ingredient container', () => {
+    it('returns container', () => {
+      expect(parse('1 (8 ounce) can tomato sauce').container).to.deep.equal({
+        quantity: '8',
+        unit: 'ounce'
+      });
+      expect(parse('1 (.18 ounce) packet sazon seasoning').container).to.deep.equal({
+        quantity: '.18',
+        unit: 'ounce'
       });
     });
   });
@@ -147,7 +170,8 @@ describe('recipe parser', () => {
     expect(parse('1 tortilla')).to.deep.equal({
       unit: null,
       ingredient: 'tortilla',
-      quantity: '1'
+      quantity: '1',
+      container: null
     });
   });
 
@@ -155,7 +179,8 @@ describe('recipe parser', () => {
     expect(parse('powdered sugar')).to.deep.equal({
       unit: null,
       ingredient: 'powdered sugar',
-      quantity: null
+      quantity: null,
+      container: null
     });
   });
 
@@ -247,13 +272,6 @@ describe('recipe parser', () => {
       expect(parse('1 teaspoon milk').ingredient).to.equal('milk');
     });
   });
-
-  describe('translate ingredient container', () => {
-    expect(parse('1 (8 ounce) can tomato sauce').container).to.deep.equal({
-      quantity: '8',
-      unit: 'ounce'
-    })
-  })
 });
 
 describe('combine ingredients', () => {

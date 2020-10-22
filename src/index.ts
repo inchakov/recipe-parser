@@ -42,18 +42,18 @@ export function parse(recipeString: string) {
   if (convert.getFirstMatch(noQuantity, /\(([^\)]+)\)/)) {
     extraInfo = convert.getFirstMatch(noQuantity, /\(([^\)]+)\)/);
     noQuantity = noQuantity.replace(extraInfo, '').trim();
-    if(extraInfo) {
+    if (extraInfo) {
       let containerUnit;
       let [containerQuantity, containerNonQuantity] = convert.findQuantityAndConvertIfUnicode(extraInfo.substring(1, extraInfo.length - 1));
-      if(containerNonQuantity) {
+      if (containerNonQuantity) {
         [containerUnit] = getUnit(containerNonQuantity.split(' ')[0]) as string[];
       }
-      if(containerQuantity) {
+      if (containerQuantity) {
         containerQuantity = convert.convertFromFraction(containerQuantity);
         container = {
           quantity: containerQuantity,
           unit: containerUnit
-        }
+        };
       }
     }
   }
@@ -64,8 +64,8 @@ export function parse(recipeString: string) {
   return {
     quantity,
     unit: !!unit ? unit : null,
-    ingredient: container ? ingredient : `${extraInfo} ${ingredient}`,
-    container
+    ingredient: (container || !extraInfo) ? ingredient : `${extraInfo} ${ingredient}`,
+    container: (container ? container : null)
   };
 }
 
@@ -104,9 +104,9 @@ export function prettyPrintingPress(ingredient: Ingredient) {
         const len = fraction.length - 2;
         let denominator = Math.pow(10, len);
         let numerator = +fraction * denominator;
-        
+
         const divisor = gcd(numerator, denominator);
-  
+
         numerator /= divisor;
         denominator /= divisor;
         fractional = Math.floor(numerator) + '/' + Math.floor(denominator);
